@@ -7,7 +7,7 @@ Claude Cowork.
 ## Status
 
 This is a personal utility script, shared as reference material alongside
-[an issue on the aisuite repo](https://github.com/andrewyng/aisuite/issues)
+[an issue on the aisuite repo](https://github.com/andrewyng/aisuite/issues/402)
 asking whether an MCP *server* companion (as opposed to aisuite's existing
 MCP *client* support) would be of interest to the project. It is **not**
 packaged or published, has had limited testing, and its docstrings, error
