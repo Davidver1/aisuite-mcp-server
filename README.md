@@ -2,7 +2,7 @@
 
 A small MCP server that exposes [aisuite](https://github.com/andrewyng/aisuite)'s
 multi-provider chat completions as a single tool for MCP clients such as
-Claude Desktop and Claude Code.
+Claude Cowork.
 
 ## Status
 
