@@ -17,14 +17,14 @@ finished library.
 ## What it does
 
 One MCP tool, `vraag_taalmodel` ("ask language model"), backed by
-`aisuite.Client()`. It covers **every provider aisuite ships** — the list
+`aisuite.Client()`. It covers **every provider aisuite ships**: the list
 comes from `ProviderFactory.get_supported_providers()` at import time, not
 from a table in this file, so a provider added in a future aisuite release
 works here without any change. As of aisuite 0.1.14 that is 21 providers.
 
 Deliberately, this server does not police that list. If a provider can't do
 chat (`deepgram`), or its credentials aren't set up (`google`), aisuite
-itself says so clearly — and gatekeeping would only block providers that
+itself says so clearly, and gatekeeping would only block providers that
 would otherwise work, such as `aws` for anyone who already has a boto3
 credential chain configured.
 
@@ -49,9 +49,9 @@ keyring set watsonx project-id
 ```
 
 (`huggingface` also uses `api-key`, but aisuite wants it under the config
-name `token` — handled internally.)
+name `token`, handled internally.)
 
-Three groups need nothing from the keyring:
+Two groups need nothing from the keyring:
 
 - `ollama` and `lmstudio` run locally.
 - `aws` and `google` use their own credential chains (boto3's, and
@@ -59,7 +59,7 @@ Three groups need nothing from the keyring:
   empty config and lets them resolve it.
 
 Secrets are passed to aisuite as per-provider **configuration**, not
-exported into the process environment — so they are not inherited by any
+exported into the process environment, so they are not inherited by any
 subprocess a library might spawn. A missing secret produces a message
 naming the exact `keyring set` command to run, and only for the fields
 actually missing, rather than a raw SDK exception.
@@ -82,7 +82,7 @@ calls at the operator's expense.
 aisuite's own `mcp` extra pins `mcp<2.0.0` (needed for its MCP *client*
 feature). Building an MCP *server* requires `mcp>=2.0.0` (the `MCPServer`
 class only exists from 2.0 onward). Bundling both into the same package
-would create an internal version conflict between aisuite's own extras —
+would create an internal version conflict between aisuite's own extras,
 so this lives as a separate, thin wrapper instead.
 
 ## Running it
@@ -114,7 +114,7 @@ Then point an MCP client at it, e.g. in `claude_desktop_config.json`:
 ## Checking your setup
 
 `controle.py` reports, for every provider aisuite knows, whether it is
-usable — SDK installed, credentials present, chat supported — without
+usable (SDK installed, credentials present, chat supported) without
 making a single API call:
 
 ```
@@ -137,7 +137,7 @@ pip install pytest
 pytest -v
 ```
 
-31 tests, no network access or real credentials required — the keyring is
+31 tests, no network access or real credentials required: the keyring is
 mocked and the aisuite client replaced with a double. Coverage includes the
 credential-mapping conventions (including that a provider with no table
 entry falls back to the standard one, so future aisuite providers work),
@@ -147,4 +147,4 @@ real stdio MCP handshake against the server running as a subprocess.
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT, see [LICENSE](LICENSE).
