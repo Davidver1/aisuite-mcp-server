@@ -10,13 +10,12 @@ This is a personal utility script, shared as reference material alongside
 [issue #402 on the aisuite repo](https://github.com/andrewyng/aisuite/issues/402)
 asking whether an MCP *server* companion (as opposed to aisuite's existing
 MCP *client* support) would be of interest to the project. It is **not**
-packaged or published, and its docstrings, error messages and tool
-descriptions are in Dutch. Treat it as a working proof of concept, not a
+packaged or published. Treat it as a working proof of concept, not a
 finished library.
 
 ## What it does
 
-One MCP tool, `vraag_taalmodel` ("ask language model"), backed by
+One MCP tool, `ask_language_model`, backed by
 `aisuite.Client()`. It covers **every provider aisuite ships**: the list
 comes from `ProviderFactory.get_supported_providers()` at import time, not
 from a table in this file, so a provider added in a future aisuite release
@@ -113,21 +112,21 @@ Then point an MCP client at it, e.g. in `claude_desktop_config.json`:
 
 ## Checking your setup
 
-`controle.py` reports, for every provider aisuite knows, whether it is
+`check_setup.py` reports, for every provider aisuite knows, whether it is
 usable (SDK installed, credentials present, chat supported) without
 making a single API call:
 
 ```
-python controle.py
+python check_setup.py
 ```
 
-Each provider gets one of four stamps: `GEREED` (ready), `SLEUTEL` (needs a
-keyring entry), `PAKKET` (SDK not installed), `GEEN CHAT` (transcription
-only). To make one real call, which does cost money on a paid provider:
+Each provider gets one of four stamps: `READY`, `KEY` (needs a keyring
+entry), `PACKAGE` (SDK not installed), `NO CHAT` (transcription only). To
+make one real call, which does cost money on a paid provider:
 
 ```
-python controle.py --vraag ollama:mistral-small:latest
-python controle.py --vraag openai:gpt-5.5
+python check_setup.py --ask ollama:mistral-small:latest
+python check_setup.py --ask openai:gpt-5.5
 ```
 
 ## Tests
