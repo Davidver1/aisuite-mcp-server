@@ -2,7 +2,7 @@
 
 A small MCP server that exposes [aisuite](https://github.com/andrewyng/aisuite)'s
 multi-provider chat completions as a single tool for MCP clients such as
-Claude Desktop and Claude Code.
+Claude Cowork.
 
 ## Status
 
@@ -143,11 +143,11 @@ python check_setup.py --ask openai:gpt-5.5
 ## Tests
 
 ```
-pip install pytest
+pip install -r requirements-dev.txt
 pytest -v
 ```
 
-31 tests, no network access or real credentials required: the keyring is
+33 tests, no network access or real credentials required: the keyring is
 mocked and the aisuite client replaced with a double. Coverage includes the
 credential-mapping conventions (including that a provider with no table
 entry falls back to the standard one, so future aisuite providers work),
