@@ -95,16 +95,21 @@ pip install -r requirements.txt
 (`mcp` is listed directly rather than via `aisuite[mcp]`, which would pin
 it below 2.0.)
 
-That's enough to run the server and use `ollama` or `lmstudio`. Every
-other provider needs its own SDK on top of that, for example:
+That's enough to run the server and use `ollama`, `lmstudio`, `azure`,
+`fireworks`, `together` or `xai` -- those need no extra package, since
+they use only the standard library or the same `httpx` that aisuite
+itself already depends on. Most other providers need their own SDK on
+top of that, for example:
 
 ```
 pip install anthropic openai mistralai
 ```
 
-`check_setup.py` (below) reports exactly which package is still missing
-for a given provider, so there's no need to guess or install everything
-up front.
+`openai` is shared: it also covers `deepseek`, `inception`, `nebius` and
+`sambanova`, which are OpenAI-compatible APIs and use that package
+rather than one of their own. It isn't a strict one-provider-one-package
+mapping, so `check_setup.py` (below) is the way to know for sure what,
+if anything, is still missing for a given provider.
 
 Start it:
 
