@@ -30,11 +30,8 @@ Starting it (stdio, the form Claude Desktop expects):
 
     python aisuite_mcp_server.py
 
-Installing:
-
-    pip install aisuite anthropic boto3 cerebras_cloud_sdk cohere \\
-        google-cloud-speech vertexai groq ibm-watsonx-ai mistralai \\
-        openai huggingface_hub requests mcp keyring
+Installing: see requirements.txt for the core dependencies, and the
+README's "Running it" section for adding per-provider SDKs.
 """
 
 from __future__ import annotations
@@ -165,11 +162,29 @@ def short_error(error: object) -> str:
     return text
 
 
-def provider_config(provider: str) -> tuple[dict[str, Any] | None, str | None]:
+class ConfigError(str):
+    """The reason a provider's configuration couldn't be built.
+
+    A str subclass: it reads like the plain message it always was (for
+    tool results, logging, and 'x in error' checks), but also carries
+    `summary` (the message without the multi-line fix command) and
+    `keyring_unreachable`, so a caller like check_setup.py can branch on
+    the actual reason instead of parsing the prose.
+    """
+
+    def __new__(cls, summary: str, fix: str = '', keyring_unreachable: bool = False):
+        text = f'{summary}. {fix}' if fix else summary
+        self = super().__new__(cls, text)
+        self.summary = summary
+        self.keyring_unreachable = keyring_unreachable
+        return self
+
+
+def provider_config(provider: str) -> tuple[dict[str, Any] | None, ConfigError | None]:
     """Build the aisuite configuration for *provider* from the keyring.
 
-    Returns ``(config, None)`` on success, and ``(None, message)`` if
-    something is missing -- a message rather than an exception, so the
+    Returns ``(config, None)`` on success, and ``(None, error)`` if
+    something is missing -- an error rather than an exception, so the
     caller can show it as a tool result without the server crashing.
 
     This sends the keys straight to aisuite; they never end up in
@@ -189,16 +204,19 @@ def provider_config(provider: str) -> tuple[dict[str, Any] | None, str | None]:
     try:
         values = {field: keyring.get_password(provider, field) for field in fields}
     except Exception as exc:  # e.g. no keyring backend available
-        return None, f"keyring unreachable for '{provider}': {short_error(exc)}"
+        return None, ConfigError(
+            f"keyring unreachable for '{provider}': {short_error(exc)}",
+            keyring_unreachable=True,
+        )
 
     missing = [f for f in fields if f not in optional and not values.get(f)]
     if missing:
         # Name only the missing fields: listing the commands for fields
         # that are already set would read as "none of this is right".
         lines = '\n'.join(f'    keyring set {provider} {field}' for field in missing)
-        return None, (
-            f"{provider} is missing {', '.join(missing)} in the keyring. "
-            f'Set {"them" if len(missing) > 1 else "it"} with:\n{lines}'
+        return None, ConfigError(
+            f"{provider} is missing {', '.join(missing)} in the keyring",
+            fix=f'Set {"them" if len(missing) > 1 else "it"} with:\n{lines}',
         )
 
     return {fields[field]: value for field, value in values.items() if value}, None
@@ -227,7 +245,7 @@ def run_query(
 
     config, error = provider_config(provider)
     if error is not None:
-        return _result({'error': error})
+        return _result({'error': str(error)})
 
     # aisuite creates a provider once and keeps it after that, so the
     # config has to be there beforehand. A key changed in the keyring

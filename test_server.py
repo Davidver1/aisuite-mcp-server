@@ -157,6 +157,26 @@ def test_unreachable_keyring_gives_a_message_not_an_exception():
     assert 'keyring unreachable' in error
 
 
+def test_unreachable_keyring_error_is_flagged_structurally():
+    """check_setup.py branches on this flag instead of parsing the message."""
+    with mock.patch.object(
+        srv.keyring, 'get_password', side_effect=RuntimeError('no backend')
+    ):
+        _, error = srv.provider_config('mistral')
+    assert error.keyring_unreachable is True
+
+
+def test_missing_key_error_has_a_short_summary():
+    """The summary is the one-liner check_setup.py's overview can show,
+    without the multi-line 'keyring set ...' fix command."""
+    with fake_keyring({}):
+        _, error = srv.provider_config('mistral')
+    assert error.keyring_unreachable is False
+    assert error.summary == 'mistral is missing api-key in the keyring'
+    assert 'keyring set' not in error.summary
+    assert 'keyring set mistral api-key' in error
+
+
 # --------------------------------------------------------------------------
 # run_query
 # --------------------------------------------------------------------------

@@ -1,0 +1,15 @@
+# Core dependencies: enough to run the server and use any provider that
+# needs no separate SDK (ollama, lmstudio) or resolves its own credentials
+# (aws, google, once boto3 / the Google SDK are installed).
+#
+# mcp is listed directly, not via aisuite[mcp], which pins mcp<2.0.0 for
+# its own MCP *client* feature. This server needs mcp>=2.0.0 for the
+# MCPServer class; having both in one environment causes an import error.
+aisuite
+mcp>=2.0.0
+keyring
+
+# Every provider beyond that needs its own SDK on top of this file, e.g.
+# `pip install anthropic` for anthropic, `pip install boto3` for aws. Run
+# check_setup.py to see exactly which package is still missing for a
+# given provider.

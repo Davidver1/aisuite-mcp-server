@@ -86,14 +86,25 @@ so this lives as a separate, thin wrapper instead.
 
 ## Running it
 
-Install into its own environment (note: `mcp` is installed directly rather
-than via `aisuite[mcp]`, which would pin it below 2.0):
+Install the core dependencies into their own environment:
 
 ```
-pip install aisuite anthropic boto3 cerebras_cloud_sdk cohere \
-    google-cloud-speech vertexai groq ibm-watsonx-ai mistralai \
-    openai huggingface_hub requests mcp keyring
+pip install -r requirements.txt
 ```
+
+(`mcp` is listed directly rather than via `aisuite[mcp]`, which would pin
+it below 2.0.)
+
+That's enough to run the server and use `ollama` or `lmstudio`. Every
+other provider needs its own SDK on top of that, for example:
+
+```
+pip install anthropic openai mistralai
+```
+
+`check_setup.py` (below) reports exactly which package is still missing
+for a given provider, so there's no need to guess or install everything
+up front.
 
 Start it:
 

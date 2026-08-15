@@ -42,12 +42,12 @@ def _provider_status(provider: str) -> tuple[str, str]:
     # 3. Are the credentials in order?
     config, error = srv.provider_config(provider)
     if error is not None:
-        if 'keyring unreachable' in error:
+        if error.keyring_unreachable:
             # The reason is already at the top of the overview; keep it short here.
             return 'KEY', 'keyring unusable (see above)'
-        # The message is built as "<what's missing>. Set ... with:\n<command>".
-        # Only the first part fits in this overview.
-        return 'KEY', error.split('. Set ')[0]
+        # error.summary is the one-line reason, without the multi-line fix
+        # command that doesn't fit in this overview.
+        return 'KEY', error.summary
 
     if provider in srv._LOCAL:
         return 'READY', 'local, no key needed'
