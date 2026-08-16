@@ -89,6 +89,13 @@ _LOCAL: dict[str, dict[str, Any]] = {
     # call; aisuite's default of 30s is too tight for that. How often this
     # still happens afterward depends on OLLAMA_KEEP_ALIVE, which controls
     # how long a model stays warm.
+    #
+    # This only governs aisuite's own HTTP call to Ollama. The MCP client
+    # (e.g. Claude Desktop) has its own, separate timeout on the tool call
+    # itself, and a cold load can still exceed that even though aisuite
+    # would have waited longer. Nothing this server can do about that from
+    # here; keeping the model warm (see OLLAMA_KEEP_ALIVE above) is the
+    # workaround.
     'ollama': {'timeout': 300},
     # lmstudio is already set to 300s in aisuite itself.
     'lmstudio': {},
